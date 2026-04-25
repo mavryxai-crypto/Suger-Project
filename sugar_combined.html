@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رحلة السكر</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --g:#3db84a; --y:#ffd700; --b:#4d7fff; --r:#ff3b3b;
+}
+body{
+  background:#0a0a0a;
+  font-family:'Cairo',sans-serif;
+  color:white;
+  min-height:100vh;
+}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;flex-direction:column;}
+.screen.active{display:flex;}
+
+/* ════════════════════════
+   WELCOME SCREEN
+════════════════════════ */
+#welcome{
+  align-items:center;justify-content:center;
+  text-align:center;padding:32px 24px;
+  background:radial-gradient(ellipse at 50% 30%,#1a2a0a,#0a0a0a 70%);
+}
+.w-icon{font-size:80px;margin-bottom:16px;}
+.w-title{
+  font-size:2rem;font-weight:900;
+  background:linear-gradient(135deg,#fff,#9de07a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.2;margin-bottom:10px;
+}
+.w-sub{font-size:.85rem;color:#4a6a3a;line-height:1.7;margin-bottom:32px;}
+.stages-preview{
+  display:flex;flex-direction:column;gap:10px;
+  width:100%;max-width:360px;margin-bottom:32px;
+}
+.sp-item{
+  display:flex;align-items:center;gap:12px;
+  background:#0f0f0f;border:1px solid #1a1a1a;
+  border-radius:10px;padding:12px 16px;
+  font-size:.85rem;font-weight:700;color:#666;
+  text-align:right;
+}
+.sp-num{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:900;flex-shrink:0;
+}
+.sp-1 .sp-num{background:#0f2a08;color:var(--g);}
+.sp-2 .sp-num{background:#1a1200;color:var(--y);}
+.sp-3 .sp-num{background:#061030;color:var(--b);}
+.sp-4 .sp-num{background:#200505;color:var(--r);}
+
+/* ════════════════════════
+   INFO SCREEN
+════════════════════════ */
+#info{padding-bottom:40px;}
+
+.info-hero{
+  padding:36px 20px 28px;
+  text-align:center;
+  position:relative;overflow:hidden;
+}
+.info-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,rgba(61,184,74,.12),transparent 65%);
+}
+.info-hero-label{
+  display:inline-block;
+  border-radius:20px;padding:4px 16px;
+  font-size:.7rem;font-weight:700;letter-spacing:2px;
+  background:rgba(61,184,74,.12);border:1px solid rgba(61,184,74,.25);
+  color:var(--g);margin-bottom:12px;position:relative;
+}
+.info-hero h1{
+  font-size:1.7rem;font-weight:900;
+  background:linear-gradient(135deg,#fff,#9de07a);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.25;position:relative;
+}
+.info-hero p{font-size:.8rem;color:#3a5a2a;margin-top:8px;position:relative;}
+
+.stages-list{padding:16px 16px 0;}
+
+/* stage card */
+.sc{border-radius:12px;overflow:hidden;margin-bottom:8px;border:1px solid;}
+.sc-head{display:flex;align-items:center;gap:12px;padding:14px 16px;}
+.sc-num{
+  width:36px;height:36px;min-width:36px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;
+}
+.sc-label{font-size:.65rem;font-weight:700;letter-spacing:1.5px;opacity:.55;text-transform:uppercase;}
+.sc-title{font-size:.98rem;font-weight:900;margin-top:1px;}
+.sc-body{padding:0 16px 14px;font-size:.82rem;line-height:1.8;border-top:1px solid;}
+.sc-body{padding-top:12px;}
+.sc-fact{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:6px;padding:5px 12px;
+  font-size:.75rem;font-weight:700;
+  margin-top:10px;border:1px solid;
+}
+.arr{text-align:right;color:#1e1e1e;font-size:18px;padding-right:42px;margin:4px 0;}
+
+/* colors */
+.sc-g{background:#070f05;border-color:#1a3a10;}
+.sc-g .sc-num{background:#1a3a10;color:var(--g);}
+.sc-g .sc-title{color:var(--g);}
+.sc-g .sc-body{border-color:#121e0e;color:#7ab868;}
+.sc-g .sc-fact{background:rgba(61,184,74,.08);border-color:rgba(61,184,74,.2);color:var(--g);}
+
+.sc-y{background:#060400;border-color:#2a1e00;}
+.sc-y .sc-num{background:#2a1e00;color:var(--y);}
+.sc-y .sc-title{color:var(--y);}
+.sc-y .sc-body{border-color:#1e1600;color:#7a6820;}
+.sc-y .sc-fact{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.18);color:var(--y);}
+
+.sc-b{background:#030610;border-color:#0a1840;}
+.sc-b .sc-num{background:#0a1840;color:var(--b);}
+.sc-b .sc-title{color:var(--b);}
+.sc-b .sc-body{border-color:#070e2e;color:#4a60a8;}
+.sc-b .sc-fact{background:rgba(77,127,255,.08);border-color:rgba(77,127,255,.2);color:var(--b);}
+
+.sc-r{background:#060000;border-color:#2a0808;}
+.sc-r .sc-num{background:#2a0808;color:var(--r);}
+.sc-r .sc-title{color:var(--r);}
+.sc-r .sc-body{border-color:#200606;color:#884040;}
+.sc-r .sc-fact{background:rgba(255,59,59,.08);border-color:rgba(255,59,59,.2);color:var(--r);}
+
+/* start quiz btn */
+.start-quiz-wrap{
+  padding:24px 16px 0;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.start-quiz-btn{
+  width:100%;max-width:400px;
+  padding:16px;background:#ffd700;color:#000;
+  border:none;border-radius:10px;
+  font-family:'Cairo',sans-serif;
+  font-size:1rem;font-weight:900;cursor:pointer;
+}
+
+/* ════════════════════════
+   QUIZ SCREEN
+════════════════════════ */
+#quiz{align-items:center;padding-bottom:40px;}
+
+.prog-wrap{
+  position:fixed;top:0;left:0;right:0;height:3px;
+  background:#111;z-index:99;
+}
+.prog-bar{height:100%;background:#ffd700;transition:width .4s;}
+
+.q-top{
+  width:100%;max-width:440px;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px 0;
+}
+.q-num{font-size:.7rem;color:#333;font-weight:700;letter-spacing:1.5px;}
+.q-score{
+  background:#0f0f0f;border:1px solid #ffd70022;
+  padding:3px 12px;border-radius:20px;
+  font-size:.72rem;color:#ffd700;font-weight:700;
+}
+
+.q-card{
+  width:100%;max-width:440px;
+  background:#0d0d0d;border:1px solid #1c1c1c;border-radius:14px;
+  padding:20px 18px;margin:12px 16px 0;
+}
+.q-cat{font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:#333;text-transform:uppercase;margin-bottom:10px;}
+.q-emoji{font-size:32px;display:block;margin-bottom:10px;}
+.q-text{font-size:.93rem;font-weight:700;color:#ddd;line-height:1.65;}
+
+.opts-wrap{width:100%;max-width:440px;padding:0 16px;display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.opt{
+  width:100%;display:flex;align-items:center;gap:10px;
+  padding:12px 14px;border-radius:9px;
+  border:1.5px solid #1c1c1c;background:#0d0d0d;
+  color:#888;font-family:'Cairo',sans-serif;
+  font-size:.85rem;font-weight:700;text-align:right;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:border-color .12s;
+}
+.opt:not(:disabled):active{transform:scale(.985);}
+.opt-l{
+  width:24px;height:24px;min-width:24px;border-radius:50%;
+  background:#1a1a1a;border:1px solid #2a2a2a;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:900;color:#444;flex-shrink:0;
+}
+.opt.correct{border-color:#2a7a2a;background:rgba(40,140,40,.1);color:#66dd66;}
+.opt.correct .opt-l{background:#1a4a1a;border-color:#2a7a2a;color:#66dd66;}
+.opt.wrong{border-color:#7a2a2a;background:rgba(140,40,40,.1);color:#dd6666;}
+.opt.wrong .opt-l{background:#4a1a1a;border-color:#7a2a2a;color:#dd6666;}
+.opt.reveal{border-color:#1e4a1e55;color:#3a6a3a55;}
+.opt.reveal .opt-l{background:#0f2a0f;color:#3a6a3a55;}
+
+.fb{
+  width:100%;max-width:440px;margin:8px 16px 0;
+  border-radius:9px;padding:12px 14px;
+  font-size:.8rem;line-height:1.65;display:none;
+}
+.fb.show{display:block;}
+.fb.ok{background:rgba(40,140,40,.08);border:1px solid rgba(40,140,40,.18);color:#5ab85a;}
+.fb.no{background:rgba(140,40,40,.08);border:1px solid rgba(140,40,40,.18);color:#b85a5a;}
+
+.next-btn{
+  width:100%;max-width:440px;margin:10px 16px 0;
+  padding:14px;background:#ffd700;color:#000;
+  border:none;border-radius:9px;
+  font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:900;
+  cursor:pointer;display:none;-webkit-tap-highlight-color:transparent;
+}
+.next-btn.show{display:block;}
+
+/* ════════════════════════
+   RESULT SCREEN
+════════════════════════ */
+#result{
+  align-items:center;justify-content:center;
+  text-align:center;padding:32px 20px;
+}
+.r-icon{font-size:64px;margin-bottom:8px;}
+.r-stars{font-size:22px;margin-bottom:10px;}
+.r-title{font-size:1.4rem;font-weight:900;margin-bottom:4px;}
+.r-score{
+  font-size:3rem;font-weight:900;color:#ffd700;
+  line-height:1;margin:12px 0 4px;
+  text-shadow:0 0 25px rgba(255,215,0,.3);
+}
+.r-pct{font-size:.78rem;color:#444;margin-bottom:16px;}
+.r-msg{
+  background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;
+  padding:14px 16px;font-size:.82rem;color:#666;
+  line-height:1.75;margin-bottom:20px;max-width:340px;
+}
+.r-breakdown{
+  width:100%;max-width:340px;
+  background:#0d0d0d;border:1px solid #1a1a1a;border-radius:10px;
+  padding:10px 16px;margin-bottom:20px;
+}
+.r-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;border-bottom:1px solid #141414;
+  font-size:.78rem;
+}
+.r-row:last-child{border:none;}
+.r-row-cat{color:#444;}
+.btn-main{
+  width:100%;max-width:340px;padding:14px;
+  background:#ffd700;color:#000;border:none;border-radius:9px;
+  font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:900;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.btn-ghost{
+  width:100%;max-width:340px;padding:12px;
+  background:transparent;color:#333;
+  border:1px solid #1a1a1a;border-radius:9px;
+  font-family:'Cairo',sans-serif;font-size:.82rem;font-weight:700;
+  cursor:pointer;margin-top:8px;-webkit-tap-highlight-color:transparent;
+}
+
+/* ─ SHARED BTN ─ */
+.btn-g{
+  width:100%;max-width:360px;padding:15px;
+  border:none;border-radius:10px;
+  font-family:'Cairo',sans-serif;font-size:1rem;font-weight:900;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ WELCOME ══════════════ -->
+<div class="screen active" id="welcome">
+  <div class="w-icon">🍬</div>
+  <div class="w-title">رحلة السكر<br>من القصب للكوباية</div>
+  <p class="w-sub">اعرف بيجي منين — وبيعمل إيه في جسمك</p>
+
+  <div class="stages-preview">
+    <div class="sp-item sp-1"><div class="sp-num">١</div>🌾 الغيط</div>
+    <div class="sp-item sp-2"><div class="sp-num">٢</div>🏭 التصنيع</div>
+    <div class="sp-item sp-3"><div class="sp-num">٣</div>📦 المنتجات</div>
+    <div class="sp-item sp-4"><div class="sp-num">٤</div>⚠️ الأضرار</div>
+  </div>
+
+  <button class="btn-g" style="background:#3db84a;color:#000;" onclick="show('info')">
+    ابدأ القراءة ←
+  </button>
+</div>
+
+<!-- ══════════════ INFO ══════════════ -->
+<div class="screen" id="info">
+
+  <div class="info-hero">
+    <div class="info-hero-label">🍬 مشروع مراحل السكر</div>
+    <h1>من القصب<br>للكوباية</h1>
+    <p>اعرف بيجي منين وبيعمل إيه في جسمك</p>
+  </div>
+
+  <div class="stages-list">
+
+    <div class="sc sc-g">
+      <div class="sc-head">
+        <div class="sc-num">١</div>
+        <div><div class="sc-label">المصدر الطبيعي</div><div class="sc-title">🌾 الغيط</div></div>
+      </div>
+      <div class="sc-body">
+        قصب السكر نبات بينمو في الأرض وجواه سكر طبيعي وألياف ومعادن مفيدة. لو عصرته وشربته طازج من غير ما يتصنع — هو مشروب صحي!
+        <br><span class="sc-fact">🌿 75% من القصب ماء وألياف — بيتضيعوا في المصنع!</span>
+      </div>
+    </div>
+
+    <div class="arr">▼</div>
+
+    <div class="sc sc-y">
+      <div class="sc-head">
+        <div class="sc-num">٢</div>
+        <div><div class="sc-label">هنا بتتغير الحكاية</div><div class="sc-title">🏭 التصنيع</div></div>
+      </div>
+      <div class="sc-body">
+        في المصنع القصب بيتعصر ← يتنقى ← يتغلى ← يتبلور ← يتعبأ. بعد 5 مراحل السكر بقى أبيض — بس خسر كل الفيتامينات والألياف والمعادن!
+        <br><span class="sc-fact">⚙️ السكر الأبيض مفيهوش أي فايدة — بس سعرات!</span>
+      </div>
+    </div>
+
+    <div class="arr">▼</div>
+
+    <div class="sc sc-b">
+      <div class="sc-head">
+        <div class="sc-num">٣</div>
+        <div><div class="sc-label">السكر في كل حتة</div><div class="sc-title">📦 المنتجات</div></div>
+      </div>
+      <div class="sc-body">
+        السكر بيتضاف لكل حاجة حواليك — مشروبات، بسكويت، كورن فليكس، وحتى كاتشب! جسمك محتاج بس 6 معالق سكر في اليوم كله.
+        <br><span class="sc-fact">😱 كولا واحدة فيها 8 معالق — أكتر من اليوم كله!</span>
+      </div>
+    </div>
+
+    <div class="arr">▼</div>
+
+    <div class="sc sc-r">
+      <div class="sc-head">
+        <div class="sc-num">٤</div>
+        <div><div class="sc-label">لو زاد عن اللزوم</div><div class="sc-title">⚠️ الأضرار</div></div>
+      </div>
+      <div class="sc-body">
+        لما السكر بيزيد عن اللزوم جسمك بيخزّنه كدهون، وبيتعب قلبك وأسنانك. المصري بياكل في المتوسط ضعف الكمية المسموح بيها كل يوم!
+        <br><span class="sc-fact">🦷 البكتيريا في بقك بتاكل السكر وبتطلع حمض بيأكل أسنانك!</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="start-quiz-wrap">
+    <button class="start-quiz-btn" onclick="startQuiz()">
+      جاهز للاختبار؟ العب دلوقتي 🎮
+    </button>
+  </div>
+
+</div>
+
+<!-- ══════════════ QUIZ ══════════════ -->
+<div class="screen" id="quiz">
+  <div class="prog-wrap"><div class="prog-bar" id="pb"></div></div>
+  <div class="q-top">
+    <div class="q-num" id="qNum">١ / ١٢</div>
+    <div class="q-score" id="qScore">🏆 0</div>
+  </div>
+  <div class="q-card">
+    <div class="q-cat" id="qCat"></div>
+    <span class="q-emoji" id="qEmoji"></span>
+    <div class="q-text" id="qText"></div>
+  </div>
+  <div class="opts-wrap" id="opts"></div>
+  <div class="fb" id="fb"></div>
+  <button class="next-btn" id="nextBtn" onclick="nextQ()">التالي ←</button>
+</div>
+
+<!-- ══════════════ RESULT ══════════════ -->
+<div class="screen" id="result">
+  <div class="r-icon" id="rIcon"></div>
+  <div class="r-stars" id="rStars"></div>
+  <div class="r-title" id="rTitle"></div>
+  <div class="r-score" id="rScore"></div>
+  <div class="r-pct" id="rPct"></div>
+  <div class="r-msg" id="rMsg"></div>
+  <div class="r-breakdown" id="rBreakdown"></div>
+  <button class="btn-main" onclick="startQuiz()">العب تاني 🔄</button>
+  <button class="btn-ghost" onclick="share()">شارك نتيجتك 📤</button>
+  <button class="btn-ghost" onclick="show('info')">ارجع للمعلومات 📖</button>
+</div>
+
+<script>
+const L = ['أ','ب','ج','د'];
+
+const qs = [
+  // ══ الغيط ══
+  {cat:'🌾 الغيط', e:'🌿',
+   q:'قصب السكر لو اتشرب طازج من غير مصنع — بيبقى إيه؟',
+   o:['مشروب صحي ومفيد','ضار جداً للجسم','زي السكر الأبيض بالظبط','مفيش فرق'],
+   a:0, fb:'✅ في طبيعته هو مشروب صحي مليان ألياف وفيتامينات — التصنيع هو اللي بيغير كل حاجة!'},
+  {cat:'🌾 الغيط', e:'💨',
+   q:'إيه اللي بيحصل للألياف والفيتامينات اللي في القصب بعد التصنيع؟',
+   o:['بتتضيع خالص','بتتنقل للسكر الأبيض','بتتخزن في المصنع','بتتضاف للمنتجات التانية'],
+   a:0, fb:'✅ بتتضيع خالص! مفيش ألياف أو فيتامينات في السكر الأبيض اللي بيوصلك.'},
+  {cat:'🌾 الغيط', e:'🤔',
+   q:'ليه السكر الطبيعي في القصب أفضل من السكر الأبيض؟',
+   o:['لأنه جنب الألياف والمعادن اللي بتنفع الجسم','لأنه أحلى في الطعم','لأنه أرخص في التصنيع','مفيش فرق بينهم'],
+   a:0, fb:'✅ الألياف والمعادن اللي جنبيه هي اللي بتفرق — من غيرهم باقي بس سكر فارغ.'},
+
+  // ══ التصنيع ══
+  {cat:'🏭 التصنيع', e:'⚙️',
+   q:'السكر الأبيض اللي بنشوفه في البيت — جاي منين؟',
+   o:['من قصب السكر بعد تصنيعه','من الجبل','بيتعمل من الماء والملح','من الفاكهة مباشرة'],
+   a:0, fb:'✅ من قصب السكر! بيتعصر ويتنقى ويتغلى لحد ما يبقى السكر الأبيض اللي بنعرفه.'},
+  {cat:'🏭 التصنيع', e:'📉',
+   q:'بعد ما القصب يتصنع — إيه اللي اتغير فيه؟',
+   o:['خسر كل قيمته الغذائية وفضل بس سعرات','بقى أكثر فايدة للجسم','محتفظ بكل الفيتامينات بتاعته','بقى أخف وزناً وأسهل هضم'],
+   a:0, fb:'✅ خسر كل حاجة مفيدة! الفيتامينات والألياف والمعادن كلها راحت في عملية التصنيع.'},
+  {cat:'🏭 التصنيع', e:'🧪',
+   q:'ليه السكر الأبيض بيسموه "سعرات فارغة"؟',
+   o:['لأنه بيدي طاقة بس من غير أي فيتامينات أو معادن','لأنه خفيف الوزن','لأن سعرته في المحل رخيصة','لأنه مفيش طعم ليه'],
+   a:0, fb:'✅ "فارغة" يعني طاقة من غير فايدة — زي ما تدخل بنزين في عربية من غير ما تديها زيت أو مياه!'},
+
+  // ══ المنتجات ══
+  {cat:'📦 المنتجات', e:'😱',
+   q:'لما بتشرب عصير في الكرتونة — إيه اللي مش بتعرفه عنه؟',
+   o:['فيه سكر مضاف كتير زي الكولا تقريباً','مفيش فيه سكر خالص','السكر اللي فيه طبيعي من الفاكهة بس','أصح من المية العادية'],
+   a:0, fb:'😮 أيوه! العصير في الكرتونة فيه سكر مضاف كتير — مش بس السكر الطبيعي من الفاكهة.'},
+  {cat:'📦 المنتجات', e:'🏪',
+   q:'ليه المنتجات بتحط سكر زيادة فيها؟',
+   o:['عشان تبقى أحلى وتحسسك إنك عايزها أكتر','عشان السكر بيحافظ عليها من التلف','عشان السكر أرخص من أي مكون تاني','عشان جسمك محتاجه بكميات كبيرة'],
+   a:0, fb:'✅ بالظبط! السكر بيخلي الأكل يبقى أحلى وبيحسسك إنك عايز أكتر — وده بيزيد المبيعات.'},
+  {cat:'📦 المنتجات', e:'🔍',
+   q:'إيه أذكى طريقة تعرف بيها قد إيه السكر في منتج قبل ما تشتريه؟',
+   o:['تقرأ جدول المكونات على الباكيدج','تحكم من الطعم بتاعه','تبص على السعر — اللي أغلى أصح','لو مكتوب عليه "طبيعي" مفيش سكر زيادة'],
+   a:0, fb:'✅ جدول المكونات بيقولك بالجرام قد إيه سكر في المنتج — ده سلاحك ضد السكر المخبي!'},
+
+  // ══ الأضرار ══
+  {cat:'⚠️ الأضرار', e:'⚖️',
+   q:'لما بتاكل سكر زيادة — جسمك بيعمل إيه بيه؟',
+   o:['بيخزّنه كدهون في الجسم','بيحرقه كله على طول','بيطلعه برة الجسم','بيحوله لعضلات'],
+   a:0, fb:'✅ جسمك بيشوف السكر الزيادة كطاقة مش محتاجها دلوقتي — فبيخزّنها كدهون!'},
+  {cat:'⚠️ الأضرار', e:'🫀',
+   q:'السكر الزيادة بيأثر على إيه في جسمك؟',
+   o:['القلب والأسنان والوزن كلهم مع بعض','بس الأسنان','بس الوزن','مبيأثرش غير لو عندك مرض أصلاً'],
+   a:0, fb:'⚠️ بيأثر على كل حاجة مع بعض — القلب، الأسنان، الوزن، والبنكرياس كمان!'},
+  {cat:'⚠️ الأضرار', e:'💪',
+   q:'إيه أبسط خطوة تعملها النهارده عشان تقلل السكر؟',
+   o:['تبدل مشروب سكر واحد يومياً بمية أو عصير طبيعي','توقف السكر خالص من يوم لليوم','تاكل سكر بس في الأكل مش المشروبات','تاكل فاكهة بدل الأكل الأساسي'],
+   a:0, fb:'✅ خطوة صغيرة بتفرق كتير! مشروب واحد يومياً يعني ~14 كيلو سكر أقل في السنة 🎯'}
+];
+
+function shuffle(q){
+  const idx=[0,1,2,3];
+  for(let i=3;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  return {...q, o:idx.map(i=>q.o[i]), a:idx.indexOf(q.a)};
+}
+
+let cur=0, score=0, results=[], shuffled=[], answered=false;
+
+function startQuiz(){
+  cur=0; score=0; results=[]; answered=false;
+  shuffled=qs.map(shuffle);
+  show('quiz');
+  loadQ();
+}
+
+function loadQ(){
+  const q=shuffled[cur];
+  document.getElementById('pb').style.width=((cur/qs.length)*100)+'%';
+  document.getElementById('qNum').textContent=`${cur+1} / ${qs.length}`;
+  document.getElementById('qScore').textContent=`🏆 ${score}`;
+  document.getElementById('qCat').textContent=q.cat;
+  document.getElementById('qEmoji').textContent=q.e;
+  document.getElementById('qText').textContent=q.q;
+  const ow=document.getElementById('opts');
+  ow.innerHTML='';
+  q.o.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt';
+    b.innerHTML=`<span class="opt-l">${L[i]}</span>${o}`;
+    b.onclick=()=>pick(i);
+    ow.appendChild(b);
+  });
+  const fb=document.getElementById('fb');
+  fb.className='fb'; fb.textContent='';
+  document.getElementById('nextBtn').className='next-btn';
+  answered=false;
+}
+
+function pick(i){
+  if(answered)return;
+  answered=true;
+  const q=shuffled[cur];
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach(b=>b.disabled=true);
+  const ok=(i===q.a);
+  if(ok){btns[i].className='opt correct';score++;}
+  else{btns[i].className='opt wrong';btns[q.a].className='opt reveal';}
+  document.getElementById('qScore').textContent=`🏆 ${score}`;
+  const fb=document.getElementById('fb');
+  fb.className='fb show '+(ok?'ok':'no');
+  fb.textContent=q.fb;
+  document.getElementById('nextBtn').className='next-btn show';
+  results.push({cat:q.cat,ok});
+}
+
+function nextQ(){
+  answered=false;cur++;
+  if(cur>=qs.length){showResult();return;}
+  loadQ();
+}
+
+function showResult(){
+  document.getElementById('pb').style.width='100%';
+  show('result');
+  const p=score/qs.length;
+  let icon,stars,title,msg;
+  if(p>=.833){icon='🏆';stars='⭐⭐⭐';title='خبير السكر!';msg='ممتاز — عارف كل حاجة! شارك المعلومات دي مع صحابك وأهلك 💪';}
+  else if(p>=.583){icon='😎';stars='⭐⭐';title='كويس جداً!';msg='معلوماتك كويسة! راجع اللي غلطت فيه وهتبقى خبير 📚';}
+  else if(p>=.333){icon='🤔';stars='⭐';title='تمام!';msg='ارجع اقرأ المعلومات مرة تانية وجرب تاني 👀';}
+  else{icon='💡';stars='';title='ابدأ التعلم!';msg='مش مشكلة! ارجع اقرأ المعلومات الأول وبعدين جرب تاني 🌟';}
+  document.getElementById('rIcon').textContent=icon;
+  document.getElementById('rStars').textContent=stars;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rScore').textContent=`${score}/${qs.length}`;
+  document.getElementById('rPct').textContent=`${Math.round(p*100)}% إجابات صح`;
+  document.getElementById('rMsg').textContent=msg;
+  const bd=document.getElementById('rBreakdown');
+  bd.innerHTML='<div style="font-size:.65rem;color:#2a2a2a;font-weight:700;letter-spacing:1px;margin-bottom:8px;text-align:right">BREAKDOWN</div>';
+  results.forEach(r=>{
+    const d=document.createElement('div');
+    d.className='r-row';
+    d.innerHTML=`<span class="r-row-cat">${r.cat}</span><span>${r.ok?'✅':'❌'}</span>`;
+    bd.appendChild(d);
+  });
+}
+
+function share(){
+  const p=Math.round((score/qs.length)*100);
+  const t=`🍬 رحلة السكر\n${score}/${qs.length} (${p}%)\nاختبر نفسك أنت كمان!`;
+  if(navigator.share)navigator.share({text:t});
+  else if(navigator.clipboard)navigator.clipboard.writeText(t);
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
